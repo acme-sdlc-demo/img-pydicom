@@ -1,0 +1,36 @@
+# Written by the Agentic SDLC Platform from the Project's config; change it through the platform.
+# It runs exactly the platform's gate.
+name: sdlc-checks
+'on':
+  pull_request: {}
+  push:
+    branches:
+    - main
+permissions:
+  contents: read
+jobs:
+  checks:
+    name: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 130
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+    - name: 'install: python -m pip install -e .'
+      run: python -m pip install -e .
+    - name: 'install: python -m pip install "numpy" "pytest" "pytest-cov" "pydicom-data"
+        "pyfakefs>=6.2.0" "types-requests" "pre-commit"'
+      run: python -m pip install "numpy" "pytest" "pytest-cov" "pydicom-data" "pyfakefs>=6.2.0"
+        "types-requests" "pre-commit"
+    - name: 'install: python -m pip install "ruff==0.15.12"'
+      run: python -m pip install "ruff==0.15.12"
+    - name: python -m ruff format --check .
+      run: python -m ruff format --check .
+    - name: python -m ruff check src/
+      run: python -m ruff check src/
+    - name: python -m pre_commit run mypy --all-files
+      run: python -m pre_commit run mypy --all-files
+    - name: python -m pytest
+      run: python -m pytest
